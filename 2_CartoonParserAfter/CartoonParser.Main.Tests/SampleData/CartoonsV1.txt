@@ -1,0 +1,5 @@
+version|1.0
+One Punch Man|10/5/2015|Madhouse|Action,Comedy,Superhero
+Scooby Doo, Where Are You!|9/13/1969|Hanna-Barbera Productions|Animation,Comedy horror,Mystery,Adventure,Children's television series
+Teenage Mutant Ninja Turtles|12/28/1987|Murakami-Wolf-Swenson|Action,Superhero fiction,Comedy,Drama
+My Hero Academia|4/3/2016|Bones|Adventure,Comedy,Fantasy

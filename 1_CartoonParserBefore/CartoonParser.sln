@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartoonParser.Main", "CartoonParser.Main\CartoonParser.Main.csproj", "{203A9C34-86C2-4005-9FB2-77DA450F614A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartoonParser.Main.Tests", "CartoonParser.Main.Tests\CartoonParser.Main.Tests.csproj", "{62864B86-6C63-461B-8281-10931FC4B23D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{203A9C34-86C2-4005-9FB2-77DA450F614A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{203A9C34-86C2-4005-9FB2-77DA450F614A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{203A9C34-86C2-4005-9FB2-77DA450F614A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{203A9C34-86C2-4005-9FB2-77DA450F614A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62864B86-6C63-461B-8281-10931FC4B23D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62864B86-6C63-461B-8281-10931FC4B23D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62864B86-6C63-461B-8281-10931FC4B23D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62864B86-6C63-461B-8281-10931FC4B23D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {242F9808-FFA6-4870-9C16-BC9C4BF73306}
+	EndGlobalSection
+EndGlobal
