@@ -75,7 +75,7 @@ namespace CartoonParser.Main
                                                 if (!string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) && line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter).All(x => !string.IsNullOrEmpty(x)) && line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter).GroupBy(x => x).All(x => x.Count() == SegmentIndexReleaseDate))
                                                 {
                                                     // Map the values
-                                                    var nc = new Cartoon
+                                                    var cartoon = new Cartoon
                                                     {
                                                         Name = line.Split(SegmentDelimiter)[SegmentIndexName],
                                                         ReleaseDate = DateTime.Parse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate]),
@@ -84,7 +84,7 @@ namespace CartoonParser.Main
                                                     };
 
                                                     // add the cartoon
-                                                    cartoons.Add(nc);
+                                                    cartoons.Add(cartoon);
                                                 }
                                                 else
                                                 {
