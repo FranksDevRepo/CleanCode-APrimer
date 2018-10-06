@@ -219,17 +219,22 @@ namespace CartoonParser.Main
                     "Invalid Cartoon Studio detected. Unable to parse file.");
             } // End else for studio validation
 
-            if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) ||
-                !line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
-                    .All(x => !string.IsNullOrEmpty(x)) ||
-                !line.Split(SegmentDelimiter)[SegmentIndexGenres]
-                    .Split(GenreDelimiter).GroupBy(x => x)
-                    .All(x => x.Count() == SegmentIndexReleaseDate))
+            if (GenreIsInvalid(line))
             {
                 // Throw validation exception on genre
                 throw new CartoonParserValidationException(
                     "Invalid Cartoon Genre List detected. Unable to parse file.");
             } // End else for genre validation
+        }
+
+        private static bool GenreIsInvalid(string line)
+        {
+            return string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) ||
+                   !line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
+                       .All(x => !string.IsNullOrEmpty(x)) ||
+                   !line.Split(SegmentDelimiter)[SegmentIndexGenres]
+                       .Split(GenreDelimiter).GroupBy(x => x)
+                       .All(x => x.Count() == SegmentIndexReleaseDate);
         }
 
         private Cartoon Map(string line)
