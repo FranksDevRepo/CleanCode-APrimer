@@ -177,6 +177,17 @@ namespace CartoonParser.Main
 
         private void ValidateAndMapAndAdd(string line)
         {
+            Validate(line);
+
+            // Map the values
+            var cartoon = Map(line);
+
+            // add the cartoon
+            _cartoons.Add(cartoon);
+        }
+
+        private static void Validate(string line)
+        {
             if (line.Split(SegmentDelimiter).Length != ValidSegmentLength)
             {
                 // Throw validation exception on data length
@@ -215,12 +226,6 @@ namespace CartoonParser.Main
                 throw new CartoonParserValidationException(
                     "Invalid Cartoon Genre List detected. Unable to parse file.");
             } // End else for genre validation
-
-            // Map the values
-            var cartoon = Map(line);
-
-            // add the cartoon
-            _cartoons.Add(cartoon);
         }
 
         private Cartoon Map(string line)
