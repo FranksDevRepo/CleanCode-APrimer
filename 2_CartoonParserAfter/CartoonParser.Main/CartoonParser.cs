@@ -229,12 +229,16 @@ namespace CartoonParser.Main
 
         private static bool GenreIsInvalid(string line)
         {
-            return string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) ||
-                   !line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
-                       .All(x => !string.IsNullOrEmpty(x)) ||
-                   !line.Split(SegmentDelimiter)[SegmentIndexGenres]
-                       .Split(GenreDelimiter).GroupBy(x => x)
-                       .All(x => x.Count() == SegmentIndexReleaseDate);
+            var genresSegmentIsEmpty = string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]);
+            var oneGenreIsEmpty = !line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
+                .All(x => !string.IsNullOrEmpty(x));
+            var hasDuplicateGenre = !line.Split(SegmentDelimiter)[SegmentIndexGenres]
+                .Split(GenreDelimiter).GroupBy(x => x)
+                .All(x => x.Count() == SegmentIndexReleaseDate);
+
+            return genresSegmentIsEmpty ||
+                   oneGenreIsEmpty ||
+                   hasDuplicateGenre;
         }
 
         private Cartoon Map(string line)
