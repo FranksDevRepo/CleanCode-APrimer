@@ -70,8 +70,8 @@ namespace CartoonParser.Main
         private static void ValidateVersion(string version)
         {
             // JR: Removed version 2.0 format validation
-            var versionIsInvalid = version != CartoonVersion1;
-            if (versionIsInvalid /* && row.Split('|')[1] != "2.0"*/)
+            var versionIsValid = version == CartoonVersion1;
+            if (!versionIsValid /* && row.Split('|')[1] != "2.0"*/)
             {
                 throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
             }
@@ -189,38 +189,38 @@ namespace CartoonParser.Main
 
         private static void Validate(string line)
         {
-            var segmentLengthIsInvalid = line.Split(SegmentDelimiter).Length != ValidSegmentLength;
-            if (segmentLengthIsInvalid)
+            var segmentLengthIsValid = line.Split(SegmentDelimiter).Length == ValidSegmentLength;
+            if (!segmentLengthIsValid)
             {
                 // Throw validation exception on data length
                 throw new CartoonParserValidationException(
                     "Incorrect number of segments in row data. Unable to parse file.");
             } // End else for data length
 
-            var nameIsInvalid = string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]);
-            if (nameIsInvalid)
+            var nameIsValid = !string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]);
+            if (!nameIsValid)
             {
                 // Throw validation exception on name
                 throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
             } // End else for name validation
 
-            var releaseDateIsInvalid = !DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _);
-            if (releaseDateIsInvalid)
+            var releaseDateIsValid = DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _);
+            if (!releaseDateIsValid)
             {
                 // Throw validation exception on release date
                 throw new CartoonParserValidationException(
                     "Invalid Cartoon Release Date detected. Unable to parse file.");
             } // End else for release date validation
 
-            var studioIsInvalid = string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]);
-            if (studioIsInvalid)
+            var studioIsValid = !string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]);
+            if (!studioIsValid)
             {
                 // Throw validation exception on studio
                 throw new CartoonParserValidationException(
                     "Invalid Cartoon Studio detected. Unable to parse file.");
             } // End else for studio validation
 
-            if (GenreIsInvalid(line))
+            if (!GenreIsValid(line))
             {
                 // Throw validation exception on genre
                 throw new CartoonParserValidationException(
@@ -228,7 +228,7 @@ namespace CartoonParser.Main
             } // End else for genre validation
         }
 
-        private static bool GenreIsInvalid(string line)
+        private static bool GenreIsValid(string line)
         {
             var genresSegmentIsEmpty = string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]);
             var oneGenreIsEmpty = !line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
@@ -237,9 +237,9 @@ namespace CartoonParser.Main
                 .Split(GenreDelimiter).GroupBy(x => x)
                 .All(x => x.Count() == SegmentIndexReleaseDate);
 
-            return genresSegmentIsEmpty ||
-                   oneGenreIsEmpty ||
-                   hasDuplicateGenre;
+            return !genresSegmentIsEmpty &&
+                   !oneGenreIsEmpty &&
+                   !hasDuplicateGenre;
         }
 
         private Cartoon Map(string line)
