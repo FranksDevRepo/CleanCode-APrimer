@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CartoonParser.Main.Exceptions;
+using CartoonParser.Main.Validation;
 using NUnit.Framework;
 
 namespace CartoonParser.Main.Tests

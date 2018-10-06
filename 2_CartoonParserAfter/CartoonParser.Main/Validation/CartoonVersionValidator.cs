@@ -1,6 +1,6 @@
 ﻿using CartoonParser.Main.Exceptions;
 
-namespace CartoonParser.Main
+namespace CartoonParser.Main.Validation
 {
     public class CartoonVersionValidator
     {
