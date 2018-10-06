@@ -188,27 +188,31 @@ namespace CartoonParser.Main
 
         private static void Validate(string line)
         {
-            if (line.Split(SegmentDelimiter).Length != ValidSegmentLength)
+            var segmentLengthIsInvalid = line.Split(SegmentDelimiter).Length != ValidSegmentLength;
+            if (segmentLengthIsInvalid)
             {
                 // Throw validation exception on data length
                 throw new CartoonParserValidationException(
                     "Incorrect number of segments in row data. Unable to parse file.");
             } // End else for data length
 
-            if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]))
+            var nameIsInvalid = string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]);
+            if (nameIsInvalid)
             {
                 // Throw validation exception on name
                 throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
             } // End else for name validation
 
-            if (!DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _))
+            var releaseDateIsInvalid = !DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _);
+            if (releaseDateIsInvalid)
             {
                 // Throw validation exception on release date
                 throw new CartoonParserValidationException(
                     "Invalid Cartoon Release Date detected. Unable to parse file.");
             } // End else for release date validation
 
-            if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]))
+            var studioIsInvalid = string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]);
+            if (studioIsInvalid)
             {
                 // Throw validation exception on studio
                 throw new CartoonParserValidationException(
