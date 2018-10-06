@@ -183,54 +183,44 @@ namespace CartoonParser.Main
                 throw new CartoonParserValidationException(
                     "Incorrect number of segments in row data. Unable to parse file.");
             } // End else for data length
-            else
-            {
-                if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]))
-                {
-                    // Throw validation exception on name
-                    throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
-                } // End else for name validation
-                else
-                {
-                    if (!DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _))
-                    {
-                        // Throw validation exception on release date
-                        throw new CartoonParserValidationException(
-                            "Invalid Cartoon Release Date detected. Unable to parse file.");
-                    } // End else for release date validation
-                    else
-                    {
-                        if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]))
-                        {
-                            // Throw validation exception on studio
-                            throw new CartoonParserValidationException(
-                                "Invalid Cartoon Studio detected. Unable to parse file.");
-                        } // End else for studio validation
-                        else
-                        {
-                            if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) ||
-                                !line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
-                                    .All(x => !string.IsNullOrEmpty(x)) ||
-                                !line.Split(SegmentDelimiter)[SegmentIndexGenres]
-                                    .Split(GenreDelimiter).GroupBy(x => x)
-                                    .All(x => x.Count() == SegmentIndexReleaseDate))
-                            {
-                                // Throw validation exception on genre
-                                throw new CartoonParserValidationException(
-                                    "Invalid Cartoon Genre List detected. Unable to parse file.");
-                            } // End else for genre validation
-                            else
-                            {
-                                // Map the values
-                                var cartoon = Map(line);
 
-                                // add the cartoon
-                                _cartoons.Add(cartoon);
-                            }
-                        }
-                    }
-                }
-            }
+            if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]))
+            {
+                // Throw validation exception on name
+                throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
+            } // End else for name validation
+
+            if (!DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _))
+            {
+                // Throw validation exception on release date
+                throw new CartoonParserValidationException(
+                    "Invalid Cartoon Release Date detected. Unable to parse file.");
+            } // End else for release date validation
+
+            if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]))
+            {
+                // Throw validation exception on studio
+                throw new CartoonParserValidationException(
+                    "Invalid Cartoon Studio detected. Unable to parse file.");
+            } // End else for studio validation
+
+            if (string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) ||
+                !line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
+                    .All(x => !string.IsNullOrEmpty(x)) ||
+                !line.Split(SegmentDelimiter)[SegmentIndexGenres]
+                    .Split(GenreDelimiter).GroupBy(x => x)
+                    .All(x => x.Count() == SegmentIndexReleaseDate))
+            {
+                // Throw validation exception on genre
+                throw new CartoonParserValidationException(
+                    "Invalid Cartoon Genre List detected. Unable to parse file.");
+            } // End else for genre validation
+
+            // Map the values
+            var cartoon = Map(line);
+
+            // add the cartoon
+            _cartoons.Add(cartoon);
         }
 
         private Cartoon Map(string line)
