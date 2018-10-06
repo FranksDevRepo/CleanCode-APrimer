@@ -21,7 +21,6 @@ namespace CartoonParser.Main
     {
         private List<Cartoon> _cartoons;
         private string _version;
-        private const int SegmentIndexVersion = 1;
         private const int ValidSegmentLength = 4;
         private const int SegmentIndexName = 0;
         private const int SegmentIndexReleaseDate = 1;
@@ -41,50 +40,49 @@ namespace CartoonParser.Main
             /* Beginning */
             _cartoons = new List<Cartoon>();
 
-            var allLines = text
-                .Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
-                .ToList();
+            var allLines = GetAllLines(text);
 
-            _version = allLines
-                .Take(1)
-                .FirstOrDefault()
-                ?.Split(SegmentDelimiter)
-                .LastOrDefault();
-
+            _version = GetVersion(allLines);
             ValidateVersion(_version);
 
-            var linesToParse = allLines.Skip(1).ToList();
+            var linesToParse = GetLinesToParse(allLines);
+            ParseLines(linesToParse);
 
+            return _cartoons;
+        }
+
+        private void ParseLines(List<string> linesToParse)
+        {
             foreach (var line in linesToParse)
             {
                 ParseLine(line);
             }
+        }
 
-            return _cartoons;
+        private static List<string> GetLinesToParse(List<string> allLines)
+        {
+            return allLines.Skip(1).ToList();
+        }
+
+        private static string GetVersion(List<string> allLines)
+        {
+            return allLines
+                .Take(1)
+                .FirstOrDefault()
+                ?.Split(SegmentDelimiter)
+                .LastOrDefault();
+        }
+
+        private static List<string> GetAllLines(string text)
+        {
+            return text
+                .Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
         }
 
         private void ParseLine(string line)
         {
             /* Version number check */
-            TryValidateAndMapAndAdd(line);
-            // End Else for non-version line
-
-            // increment the line number
-        }
-
-        private static string ValidateVersion(string version)
-        {
-            // JR: Removed version 2.0 format validation
-            if (version != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
-            {
-                throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
-            }
-
-            return version;
-        }
-
-        private void TryValidateAndMapAndAdd(string line)
-        {
             switch (_version)
             {
                 // Handle version 1 file lines
@@ -162,6 +160,21 @@ namespace CartoonParser.Main
                 default:
                     throw new CartoonParserValidationException("No version detected. Unable to parse.");
             }
+
+            // End Else for non-version line
+
+            // increment the line number
+        }
+
+        private static string ValidateVersion(string version)
+        {
+            // JR: Removed version 2.0 format validation
+            if (version != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
+            {
+                throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
+            }
+
+            return version;
         }
 
         private void ValidateAndMapAndAdd(string line)
