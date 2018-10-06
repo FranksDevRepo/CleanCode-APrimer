@@ -40,48 +40,42 @@ namespace CartoonParser.Main
         {
             /* Beginning */
             _cartoons = new List<Cartoon>();
-            using (var stringReader = new StringReader(text))
+
+            var allLines = text
+                .Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            _version = allLines
+                .Take(1)
+                .FirstOrDefault()
+                ?.Split(SegmentDelimiter)
+                .LastOrDefault();
+
+            ValidateVersion(_version);
+
+            var linesToParse = allLines.Skip(1).ToList();
+
+            foreach (var line in linesToParse)
             {
-                ParseText(stringReader);
+                ParseLine(line);
             }
 
             return _cartoons;
         }
 
-        private void ParseText(StringReader stringReader)
+        private void ParseLine(string line)
         {
-/* Line Parsing */
-            string line;
-            var lineIndex = 0;
-            while ((line = stringReader.ReadLine()) != null)
-            {
-                ParseLine(lineIndex, line);
-                lineIndex++;
-            }
-        }
-
-        private void ParseLine(int lineIndex, string line)
-        {
-/* Version number check */
-            if (lineIndex == 0)
-            {
-                _version = ValidateVersion(line);
-            }
-            /* Actual line parsing */
-            else
-            {
-                TryValidateAndMapAndAdd(line);
-            } // End Else for non-version line
+            /* Version number check */
+            TryValidateAndMapAndAdd(line);
+            // End Else for non-version line
 
             // increment the line number
         }
 
-        private static string ValidateVersion(string line)
+        private static string ValidateVersion(string version)
         {
-            string version;
-            version = line.Split(SegmentDelimiter)[SegmentIndexVersion];
             // JR: Removed version 2.0 format validation
-            if (line.Split(SegmentDelimiter)[SegmentIndexVersion] != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
+            if (version != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
             {
                 throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
             }
