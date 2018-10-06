@@ -19,6 +19,7 @@ namespace CartoonParser.Main
     /// </summary>
     public class CartoonParser
     {
+        private List<Cartoon> _cartoons;
         private const int SegmentIndexVersion = 1;
         private const int ValidSegmentLength = 4;
         private const int SegmentIndexName = 0;
@@ -37,16 +38,16 @@ namespace CartoonParser.Main
         public IList<Cartoon> Parse(string text)
         {
             /* Beginning */
-            var cartoons = new List<Cartoon>();
+            _cartoons = new List<Cartoon>();
             using (var stringReader = new StringReader(text))
             {
-                ParseText(stringReader, cartoons);
+                ParseText(stringReader);
             }
 
-            return cartoons;
+            return _cartoons;
         }
 
-        private void ParseText(StringReader stringReader, List<Cartoon> cartoons)
+        private void ParseText(StringReader stringReader)
         {
 /* Line Parsing */
             string line;
@@ -54,12 +55,12 @@ namespace CartoonParser.Main
             string version = null;
             while ((line = stringReader.ReadLine()) != null)
             {
-                version = ParseLine(lineIndex, version, line, cartoons);
+                version = ParseLine(lineIndex, version, line);
                 lineIndex++;
             }
         }
 
-        private string ParseLine(int lineIndex, string version, string line, List<Cartoon> cartoons)
+        private string ParseLine(int lineIndex, string version, string line)
         {
 /* Version number check */
             if (lineIndex == 0)
@@ -69,7 +70,7 @@ namespace CartoonParser.Main
             /* Actual line parsing */
             else
             {
-                TryValidateAndMapAndAdd(version, line, cartoons);
+                TryValidateAndMapAndAdd(version, line);
             } // End Else for non-version line
 
             // increment the line number
@@ -89,14 +90,14 @@ namespace CartoonParser.Main
             return version;
         }
 
-        private void TryValidateAndMapAndAdd(string version, string line, List<Cartoon> cartoons)
+        private void TryValidateAndMapAndAdd(string version, string line)
         {
             switch (version)
             {
                 // Handle version 1 file lines
                 case CartoonVersion1:
                     // Validate the data
-                    ValidateAndMapAndAdd(line, cartoons);
+                    ValidateAndMapAndAdd(line);
                     break;
                 // Handle version 2 file lines
                 //case "2.0":
@@ -170,7 +171,7 @@ namespace CartoonParser.Main
             }
         }
 
-        private void ValidateAndMapAndAdd(string line, List<Cartoon> cartoons)
+        private void ValidateAndMapAndAdd(string line)
         {
             if (line.Split(SegmentDelimiter).Length == ValidSegmentLength)
             {
@@ -189,7 +190,7 @@ namespace CartoonParser.Main
                                 var cartoon = Map(line);
 
                                 // add the cartoon
-                                cartoons.Add(cartoon);
+                                _cartoons.Add(cartoon);
                             }
                             else
                             {
