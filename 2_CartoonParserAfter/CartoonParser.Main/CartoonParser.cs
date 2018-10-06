@@ -43,13 +43,13 @@ namespace CartoonParser.Main
                 /* Line Parsing */
                 string line;
                 var lineIndex = 0;
-                string vNoDec = null;
+                string versionNumberDecimal = null;
                 while ((line = stringReader.ReadLine()) != null)
                 {
                     /* Version number check */
                     if (lineIndex == 0)
                     {
-                        vNoDec = line.Split(SegmentDelimiter)[SegmentIndexVersion];
+                        versionNumberDecimal = line.Split(SegmentDelimiter)[SegmentIndexVersion];
                         // JR: Removed version 2.0 format validation
                         if (line.Split(SegmentDelimiter)[SegmentIndexVersion] != CartoonVersion1/* && row.Split('|')[1] != "2.0"*/)
                         {
@@ -59,7 +59,7 @@ namespace CartoonParser.Main
                     /* Actual line parsing */
                     else
                     {
-                        switch (vNoDec)
+                        switch (versionNumberDecimal)
                         {
                             // Handle version 1 file lines
                             case CartoonVersion1:
