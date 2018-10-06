@@ -51,17 +51,11 @@ namespace CartoonParser.Main
             return _cartoons;
         }
 
-        private void ParseLines(List<string> linesToParse)
+        private static List<string> GetAllLines(string text)
         {
-            foreach (var line in linesToParse)
-            {
-                ParseLine(line);
-            }
-        }
-
-        private static List<string> GetLinesToParse(List<string> allLines)
-        {
-            return allLines.Skip(1).ToList();
+            return text
+                .Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
         }
 
         private static string GetVersion(List<string> allLines)
@@ -73,11 +67,26 @@ namespace CartoonParser.Main
                 .LastOrDefault();
         }
 
-        private static List<string> GetAllLines(string text)
+        private static void ValidateVersion(string version)
         {
-            return text
-                .Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
-                .ToList();
+            // JR: Removed version 2.0 format validation
+            if (version != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
+            {
+                throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
+            }
+        }
+
+        private static List<string> GetLinesToParse(List<string> allLines)
+        {
+            return allLines.Skip(1).ToList();
+        }
+
+        private void ParseLines(List<string> linesToParse)
+        {
+            foreach (var line in linesToParse)
+            {
+                ParseLine(line);
+            }
         }
 
         private void ParseLine(string line)
@@ -164,17 +173,6 @@ namespace CartoonParser.Main
             // End Else for non-version line
 
             // increment the line number
-        }
-
-        private static string ValidateVersion(string version)
-        {
-            // JR: Removed version 2.0 format validation
-            if (version != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
-            {
-                throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
-            }
-
-            return version;
         }
 
         private void ValidateAndMapAndAdd(string line)
