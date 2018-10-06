@@ -19,6 +19,16 @@ namespace CartoonParser.Main
     /// </summary>
     public class CartoonParser
     {
+        private const int SegmentIndexVersion = 1;
+        private const int ValidSegmentLength = 4;
+        private const int SegmentIndexName = 0;
+        private const int SegmentIndexReleaseDate = 1;
+        private const int SegmentIndexStudio = 2;
+        private const int SegmentIndexGenres = 3;
+        private const string CartoonVersion1 = "1.0";
+        private const char SegmentDelimiter = '|';
+        private const char GenreDelimiter = ',';
+
         /// <summary>
         /// Parses cartoon data from a single format. All fields are required.
         /// </summary>
@@ -32,16 +42,16 @@ namespace CartoonParser.Main
             {
                 /* Line Parsing */
                 string row;
-                var l = 0;
+                var lineIndex = 0;
                 string vNoDec = null;
                 while ((row = stringReader.ReadLine()) != null)
                 {
                     /* Version number check */
-                    if (l == 0)
+                    if (lineIndex == 0)
                     {
-                        vNoDec = row.Split('|')[1];
+                        vNoDec = row.Split(SegmentDelimiter)[SegmentIndexVersion];
                         // JR: Removed version 2.0 format validation
-                        if (row.Split('|')[1] != "1.0"/* && row.Split('|')[1] != "2.0"*/)
+                        if (row.Split(SegmentDelimiter)[SegmentIndexVersion] != CartoonVersion1/* && row.Split('|')[1] != "2.0"*/)
                         {
                             throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
                         }
@@ -52,25 +62,25 @@ namespace CartoonParser.Main
                         switch (vNoDec)
                         {
                             // Handle version 1 file lines
-                            case "1.0":
+                            case CartoonVersion1:
                                 // Validate the data
-                                if (row.Split('|').Length == 4)
+                                if (row.Split(SegmentDelimiter).Length == ValidSegmentLength)
                                 {
-                                    if (!string.IsNullOrWhiteSpace(row.Split('|')[0]))
+                                    if (!string.IsNullOrWhiteSpace(row.Split(SegmentDelimiter)[0]))
                                     {
-                                        if (DateTime.TryParse(row.Split('|')[1], out _))
+                                        if (DateTime.TryParse(row.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _))
                                         {
-                                            if (!string.IsNullOrWhiteSpace(row.Split('|')[2]))
+                                            if (!string.IsNullOrWhiteSpace(row.Split(SegmentDelimiter)[SegmentIndexStudio]))
                                             {
-                                                if (!string.IsNullOrWhiteSpace(row.Split('|')[3]) && row.Split('|')[3].Split(',').All(x => !string.IsNullOrEmpty(x)) && row.Split('|')[3].Split(',').GroupBy(x => x).All(x => x.Count() == 1))
+                                                if (!string.IsNullOrWhiteSpace(row.Split(SegmentDelimiter)[SegmentIndexGenres]) && row.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter).All(x => !string.IsNullOrEmpty(x)) && row.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter).GroupBy(x => x).All(x => x.Count() == SegmentIndexReleaseDate))
                                                 {
                                                     // Map the values
                                                     var nc = new Cartoon
                                                     {
-                                                        Name = row.Split('|')[0],
-                                                        ReleaseDate = DateTime.Parse(row.Split('|')[1]),
-                                                        Studio = row.Split('|')[2],
-                                                        Genres = row.Split('|')[3].Split(',')
+                                                        Name = row.Split(SegmentDelimiter)[SegmentIndexName],
+                                                        ReleaseDate = DateTime.Parse(row.Split(SegmentDelimiter)[SegmentIndexReleaseDate]),
+                                                        Studio = row.Split(SegmentDelimiter)[SegmentIndexStudio],
+                                                        Genres = row.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
                                                     };
 
                                                     // add the cartoon
@@ -178,7 +188,7 @@ namespace CartoonParser.Main
                         }
                     } // End Else for non-version line
                     // increment the line number
-                    l++;
+                    lineIndex++;
                 }
             }
 
