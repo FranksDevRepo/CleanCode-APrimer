@@ -40,159 +40,200 @@ namespace CartoonParser.Main
             var cartoons = new List<Cartoon>();
             using (var stringReader = new StringReader(text))
             {
-                /* Line Parsing */
-                string line;
-                var lineIndex = 0;
-                string version = null;
-                while ((line = stringReader.ReadLine()) != null)
-                {
-                    /* Version number check */
-                    if (lineIndex == 0)
-                    {
-                        version = line.Split(SegmentDelimiter)[SegmentIndexVersion];
-                        // JR: Removed version 2.0 format validation
-                        if (line.Split(SegmentDelimiter)[SegmentIndexVersion] != CartoonVersion1/* && row.Split('|')[1] != "2.0"*/)
-                        {
-                            throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
-                        }
-                    }
-                    /* Actual line parsing */
-                    else
-                    {
-                        switch (version)
-                        {
-                            // Handle version 1 file lines
-                            case CartoonVersion1:
-                                // Validate the data
-                                if (line.Split(SegmentDelimiter).Length == ValidSegmentLength)
-                                {
-                                    if (!string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]))
-                                    {
-                                        if (DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _))
-                                        {
-                                            if (!string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]))
-                                            {
-                                                if (!string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) && line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter).All(x => !string.IsNullOrEmpty(x)) && line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter).GroupBy(x => x).All(x => x.Count() == SegmentIndexReleaseDate))
-                                                {
-                                                    // Map the values
-                                                    var cartoon = new Cartoon
-                                                    {
-                                                        Name = line.Split(SegmentDelimiter)[SegmentIndexName],
-                                                        ReleaseDate = DateTime.Parse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate]),
-                                                        Studio = line.Split(SegmentDelimiter)[SegmentIndexStudio],
-                                                        Genres = line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
-                                                    };
-
-                                                    // add the cartoon
-                                                    cartoons.Add(cartoon);
-                                                }
-                                                else
-                                                {
-                                                    // Throw validation exception on genre
-                                                    throw new CartoonParserValidationException("Invalid Cartoon Genre List detected. Unable to parse file.");
-                                                } // End else for genre validation
-                                            }
-                                            else
-                                            {
-                                                // Throw validation exception on studio
-                                                throw new CartoonParserValidationException("Invalid Cartoon Studio detected. Unable to parse file.");
-                                            } // End else for studio validation
-                                        }
-                                        else
-                                        {
-                                            // Throw validation exception on release date
-                                            throw new CartoonParserValidationException("Invalid Cartoon Release Date detected. Unable to parse file.");
-                                        } // End else for release date validation
-                                    }
-                                    else
-                                    {
-                                        // Throw validation exception on name
-                                        throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
-                                    } // End else for name validation
-                                }
-                                else
-                                {
-                                    // Throw validation exception on data length
-                                    throw new CartoonParserValidationException("Incorrect number of segments in row data. Unable to parse file.");
-                                } // End else for data length
-                                break;
-                            // Handle version 2 file lines
-                            //case "2.0":
-                            //// Validate the data
-                            //if (row.Split('|').Length == 5)
-                            //{
-                            //    // File must have valid name
-                            //    if (!string.IsNullOrWhiteSpace(row.Split('|')[0]))
-                            //    {
-                            //        // File must have valid release date
-                            //        if (DateTime.TryParse(row.Split('|')[1], out var _))
-                            //        {
-                            //            // File must have valid studio
-                            //            if (!string.IsNullOrWhiteSpace(row.Split('|')[2]))
-                            //            {
-                            //                // File must have non-empty genre list with non-empty entries
-                            //                if (!string.IsNullOrWhiteSpace(row.Split('|')[3]) && row.Split('|')[3].Split(',').All(x => !string.IsNullOrEmpty(x)) && row.Split('|')[3].Split(',').GroupBy(x => x).Any(x => x.Any()))
-                            //                {
-                            //                    // File must have valid IMDB score
-                            //                    if (decimal.TryParse(row.Split('|')[4], out var _))
-                            //                    {
-                            //                        // add the cartoon
-                            //                        cartoons.Add(new Cartoon
-                            //                        {
-                            //                            //Map the values
-                            //                            Name = row.Split('|')[0],
-                            //                            ReleaseDate = DateTime.Parse(row.Split('|')[1]),
-                            //                            Studio = row.Split('|')[2],
-                            //                            Genres = row.Split('|')[3].Split(','),
-                            //                            ImdbScore = Convert.ToDecimal(row.Split('|')[4])
-                            //                        });
-                            //                    }
-                            //                    else
-                            //                    {
-                            //                        // Throw validation exception on genre
-                            //                        throw new CartoonParserValidationException("Invalid Cartoon IMDB Score detected. Unable to parse file.");
-                            //                    } // End else for genre validation
-                            //                }
-                            //                else
-                            //                {
-                            //                    // Throw validation exception on genre
-                            //                    throw new CartoonParserValidationException("Invalid Cartoon Genre List detected. Unable to parse file.");
-                            //                } // End else for genre validation
-                            //            }
-                            //            else
-                            //            {
-                            //                // Throw validation exception on studio
-                            //                throw new CartoonParserValidationException("Invalid Cartoon Studio detected. Unable to parse file.");
-                            //            } // End else for studio validation
-                            //        }
-                            //        else
-                            //        {
-                            //            // Throw validation exception on release date
-                            //            throw new CartoonParserValidationException("Invalid Cartoon Release Date detected. Unable to parse file.");
-                            //        } // End else for release date validation
-                            //    }
-                            //    else
-                            //    {
-                            //        // Throw validation exception on name
-                            //        throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
-                            //    } // End else for name validation
-                            //}
-                            //else
-                            //{
-                            //    // Throw validation exception on data length
-                            //    throw new CartoonParserValidationException("Incorrect number of segments in row data. Unable to parse file.");
-                            //} // End else for data length
-                            //break;
-                            default:
-                                throw new CartoonParserValidationException("No version detected. Unable to parse.");
-                        }
-                    } // End Else for non-version line
-                    // increment the line number
-                    lineIndex++;
-                }
+                ParseText(stringReader, cartoons);
             }
 
             return cartoons;
+        }
+
+        private void ParseText(StringReader stringReader, List<Cartoon> cartoons)
+        {
+/* Line Parsing */
+            string line;
+            var lineIndex = 0;
+            string version = null;
+            while ((line = stringReader.ReadLine()) != null)
+            {
+                version = ParseLine(lineIndex, version, line, cartoons);
+                lineIndex++;
+            }
+        }
+
+        private string ParseLine(int lineIndex, string version, string line, List<Cartoon> cartoons)
+        {
+/* Version number check */
+            if (lineIndex == 0)
+            {
+                version = ValidateVersion(line);
+            }
+            /* Actual line parsing */
+            else
+            {
+                TryValidateAndMapAndAdd(version, line, cartoons);
+            } // End Else for non-version line
+
+            // increment the line number
+            return version;
+        }
+
+        private static string ValidateVersion(string line)
+        {
+            string version;
+            version = line.Split(SegmentDelimiter)[SegmentIndexVersion];
+            // JR: Removed version 2.0 format validation
+            if (line.Split(SegmentDelimiter)[SegmentIndexVersion] != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
+            {
+                throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
+            }
+
+            return version;
+        }
+
+        private void TryValidateAndMapAndAdd(string version, string line, List<Cartoon> cartoons)
+        {
+            switch (version)
+            {
+                // Handle version 1 file lines
+                case CartoonVersion1:
+                    // Validate the data
+                    ValidateAndMapAndAdd(line, cartoons);
+                    break;
+                // Handle version 2 file lines
+                //case "2.0":
+                //// Validate the data
+                //if (row.Split('|').Length == 5)
+                //{
+                //    // File must have valid name
+                //    if (!string.IsNullOrWhiteSpace(row.Split('|')[0]))
+                //    {
+                //        // File must have valid release date
+                //        if (DateTime.TryParse(row.Split('|')[1], out var _))
+                //        {
+                //            // File must have valid studio
+                //            if (!string.IsNullOrWhiteSpace(row.Split('|')[2]))
+                //            {
+                //                // File must have non-empty genre list with non-empty entries
+                //                if (!string.IsNullOrWhiteSpace(row.Split('|')[3]) && row.Split('|')[3].Split(',').All(x => !string.IsNullOrEmpty(x)) && row.Split('|')[3].Split(',').GroupBy(x => x).Any(x => x.Any()))
+                //                {
+                //                    // File must have valid IMDB score
+                //                    if (decimal.TryParse(row.Split('|')[4], out var _))
+                //                    {
+                //                        // add the cartoon
+                //                        cartoons.Add(new Cartoon
+                //                        {
+                //                            //Map the values
+                //                            Name = row.Split('|')[0],
+                //                            ReleaseDate = DateTime.Parse(row.Split('|')[1]),
+                //                            Studio = row.Split('|')[2],
+                //                            Genres = row.Split('|')[3].Split(','),
+                //                            ImdbScore = Convert.ToDecimal(row.Split('|')[4])
+                //                        });
+                //                    }
+                //                    else
+                //                    {
+                //                        // Throw validation exception on genre
+                //                        throw new CartoonParserValidationException("Invalid Cartoon IMDB Score detected. Unable to parse file.");
+                //                    } // End else for genre validation
+                //                }
+                //                else
+                //                {
+                //                    // Throw validation exception on genre
+                //                    throw new CartoonParserValidationException("Invalid Cartoon Genre List detected. Unable to parse file.");
+                //                } // End else for genre validation
+                //            }
+                //            else
+                //            {
+                //                // Throw validation exception on studio
+                //                throw new CartoonParserValidationException("Invalid Cartoon Studio detected. Unable to parse file.");
+                //            } // End else for studio validation
+                //        }
+                //        else
+                //        {
+                //            // Throw validation exception on release date
+                //            throw new CartoonParserValidationException("Invalid Cartoon Release Date detected. Unable to parse file.");
+                //        } // End else for release date validation
+                //    }
+                //    else
+                //    {
+                //        // Throw validation exception on name
+                //        throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
+                //    } // End else for name validation
+                //}
+                //else
+                //{
+                //    // Throw validation exception on data length
+                //    throw new CartoonParserValidationException("Incorrect number of segments in row data. Unable to parse file.");
+                //} // End else for data length
+                //break;
+                default:
+                    throw new CartoonParserValidationException("No version detected. Unable to parse.");
+            }
+        }
+
+        private void ValidateAndMapAndAdd(string line, List<Cartoon> cartoons)
+        {
+            if (line.Split(SegmentDelimiter).Length == ValidSegmentLength)
+            {
+                if (!string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[0]))
+                {
+                    if (DateTime.TryParse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate], out _))
+                    {
+                        if (!string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexStudio]))
+                        {
+                            if (!string.IsNullOrWhiteSpace(line.Split(SegmentDelimiter)[SegmentIndexGenres]) &&
+                                line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
+                                    .All(x => !string.IsNullOrEmpty(x)) && line.Split(SegmentDelimiter)[SegmentIndexGenres]
+                                    .Split(GenreDelimiter).GroupBy(x => x).All(x => x.Count() == SegmentIndexReleaseDate))
+                            {
+                                // Map the values
+                                var cartoon = Map(line);
+
+                                // add the cartoon
+                                cartoons.Add(cartoon);
+                            }
+                            else
+                            {
+                                // Throw validation exception on genre
+                                throw new CartoonParserValidationException(
+                                    "Invalid Cartoon Genre List detected. Unable to parse file.");
+                            } // End else for genre validation
+                        }
+                        else
+                        {
+                            // Throw validation exception on studio
+                            throw new CartoonParserValidationException(
+                                "Invalid Cartoon Studio detected. Unable to parse file.");
+                        } // End else for studio validation
+                    }
+                    else
+                    {
+                        // Throw validation exception on release date
+                        throw new CartoonParserValidationException(
+                            "Invalid Cartoon Release Date detected. Unable to parse file.");
+                    } // End else for release date validation
+                }
+                else
+                {
+                    // Throw validation exception on name
+                    throw new CartoonParserValidationException("Invalid Cartoon Name detected. Unable to parse file.");
+                } // End else for name validation
+            }
+            else
+            {
+                // Throw validation exception on data length
+                throw new CartoonParserValidationException("Incorrect number of segments in row data. Unable to parse file.");
+            } // End else for data length
+        }
+
+        private Cartoon Map(string line)
+        {
+            return new Cartoon
+            {
+                Name = line.Split(SegmentDelimiter)[SegmentIndexName],
+                ReleaseDate = DateTime.Parse(line.Split(SegmentDelimiter)[SegmentIndexReleaseDate]),
+                Studio = line.Split(SegmentDelimiter)[SegmentIndexStudio],
+                Genres = line.Split(SegmentDelimiter)[SegmentIndexGenres].Split(GenreDelimiter)
+            };
         }
     }
 
