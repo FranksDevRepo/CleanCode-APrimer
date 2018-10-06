@@ -20,6 +20,7 @@ namespace CartoonParser.Main
     public class CartoonParser
     {
         private List<Cartoon> _cartoons;
+        private string _version;
         private const int SegmentIndexVersion = 1;
         private const int ValidSegmentLength = 4;
         private const int SegmentIndexName = 0;
@@ -52,29 +53,27 @@ namespace CartoonParser.Main
 /* Line Parsing */
             string line;
             var lineIndex = 0;
-            string version = null;
             while ((line = stringReader.ReadLine()) != null)
             {
-                version = ParseLine(lineIndex, version, line);
+                ParseLine(lineIndex, line);
                 lineIndex++;
             }
         }
 
-        private string ParseLine(int lineIndex, string version, string line)
+        private void ParseLine(int lineIndex, string line)
         {
 /* Version number check */
             if (lineIndex == 0)
             {
-                version = ValidateVersion(line);
+                _version = ValidateVersion(line);
             }
             /* Actual line parsing */
             else
             {
-                TryValidateAndMapAndAdd(version, line);
+                TryValidateAndMapAndAdd(line);
             } // End Else for non-version line
 
             // increment the line number
-            return version;
         }
 
         private static string ValidateVersion(string line)
@@ -90,9 +89,9 @@ namespace CartoonParser.Main
             return version;
         }
 
-        private void TryValidateAndMapAndAdd(string version, string line)
+        private void TryValidateAndMapAndAdd(string line)
         {
-            switch (version)
+            switch (_version)
             {
                 // Handle version 1 file lines
                 case CartoonVersion1:
