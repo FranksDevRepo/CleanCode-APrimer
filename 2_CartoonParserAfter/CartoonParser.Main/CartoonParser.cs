@@ -87,17 +87,31 @@ namespace CartoonParser.Main
         }
     }
 
+    public class CartoonVersionValidator
+    {
+        public void Validate(string version)
+        {
+            var versionIsValid = version == CartoonVersion1Specification.CartoonVersion1;
+            if (!versionIsValid)
+            {
+                throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
+            }
+        }
+    }
+
     public class CartoonParser
     {
         private readonly CartoonMapper _mapper;
         private readonly CartoonValidator _validator;
+        private readonly CartoonVersionValidator _versionValidator;
         private List<Cartoon> _cartoons;
         private string _version;
 
-        public CartoonParser(CartoonMapper mapper, CartoonValidator validator)
+        public CartoonParser(CartoonMapper mapper, CartoonValidator validator, CartoonVersionValidator versionValidator)
         {
             _mapper = mapper;
             _validator = validator;
+            _versionValidator = versionValidator;
         }
 
         public IList<Cartoon> Parse(string text)
@@ -107,7 +121,7 @@ namespace CartoonParser.Main
             var allLines = GetAllLines(text);
 
             _version = GetVersion(allLines);
-            ValidateVersion(_version);
+            _versionValidator.Validate(_version);
 
             var linesToParse = GetLinesToParse(allLines);
             ParseLines(linesToParse);
@@ -129,15 +143,6 @@ namespace CartoonParser.Main
                 .FirstOrDefault()
                 ?.Split(CartoonVersion1Specification.SegmentDelimiter)
                 .LastOrDefault();
-        }
-
-        private static void ValidateVersion(string version)
-        {
-            var versionIsValid = version == CartoonVersion1Specification.CartoonVersion1;
-            if (!versionIsValid)
-            {
-                throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
-            }
         }
 
         private static List<string> GetLinesToParse(List<string> allLines)

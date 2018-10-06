@@ -15,7 +15,11 @@ namespace CartoonParser.Main.Tests
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            _parser = new CartoonParser();
+            _parser = new CartoonParser(
+                new CartoonMapper(),
+                new CartoonValidator(),
+                new CartoonVersionValidator()
+                );
         }
 
         [Test]
