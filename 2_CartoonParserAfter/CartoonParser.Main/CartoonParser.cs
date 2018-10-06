@@ -70,7 +70,8 @@ namespace CartoonParser.Main
         private static void ValidateVersion(string version)
         {
             // JR: Removed version 2.0 format validation
-            if (version != CartoonVersion1 /* && row.Split('|')[1] != "2.0"*/)
+            var versionIsInvalid = version != CartoonVersion1;
+            if (versionIsInvalid /* && row.Split('|')[1] != "2.0"*/)
             {
                 throw new CartoonParserValidationException("Unable to read file. Unrecognized format.");
             }
